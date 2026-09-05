@@ -12,7 +12,7 @@ class DatasetConfig:
 
 @dataclass
 class GeneratorConfig:
-    lr: int
+    lr: float
     noize_dim: int
     output_dim: int
     betas: tuple
@@ -20,7 +20,7 @@ class GeneratorConfig:
 
 @dataclass
 class DiscriminatorConfig:
-    lr: int
+    lr: float
     betas: tuple
 
 
@@ -37,6 +37,24 @@ class GANConfig:
     generator_config: GeneratorConfig
     discriminator_config: DiscriminatorConfig
     train_config: TrainConfig
+
+
+@dataclass
+class WGANTrainConfig:
+    device: str
+    num_epoch: int
+    checkpoint_path: str
+    n_steps: int
+    m_steps: int
+    lambda_: float
+
+
+@dataclass
+class WGANConfig:
+    dataset_config: DatasetConfig
+    generator_config: GeneratorConfig
+    discriminator_config: DiscriminatorConfig
+    train_config: WGANTrainConfig
 
 
 cfg = GANConfig(
@@ -61,5 +79,34 @@ cfg = GANConfig(
         device="cuda",
         num_epoch=20,
         checkpoint_path="./checkpoints/wide_dcgan_latest.pt",
+    ),
+)
+
+
+wgan_cfg = WGANConfig(
+    dataset_config=DatasetConfig(
+        path="./data/dataset",
+        name="celeba",
+        batch_size=128,
+        shuffle=True,
+        num_workers=4,
+    ),
+    generator_config=GeneratorConfig(
+        lr=1e-4,
+        noize_dim=128,
+        output_dim=3,
+        betas=(0.0, 0.9),
+    ),
+    discriminator_config=DiscriminatorConfig(
+        lr=1e-4,
+        betas=(0.0, 0.9),
+    ),
+    train_config=WGANTrainConfig(
+        device="cuda",
+        num_epoch=20,
+        checkpoint_path="./checkpoints/wgan_gp_latest.pt",
+        n_steps=1,
+        m_steps=5,
+        lambda_=10.0,
     ),
 )
