@@ -99,6 +99,16 @@ def main():
             },
             checkpoint_path,
         )
+        checkpoint_uploaded = clearml_task.upload_artifact(
+            name="latest_checkpoint",
+            artifact_object=str(checkpoint_path.resolve()),
+            metadata={"epoch": epoch + 1},
+            wait_on_upload=True,
+        )
+        if checkpoint_uploaded:
+            logger.info("CHECKPOINT UPLOADED FOR EPOCH %s", epoch + 1)
+        else:
+            logger.warning("CHECKPOINT UPLOAD FAILED FOR EPOCH %s", epoch + 1)
 
     clearml_task.close()
 
