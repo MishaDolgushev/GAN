@@ -18,7 +18,7 @@ def make_task(config):
     task.connect(asdict(config), name="Training Config")
     return task, logger
 
-def report_images(logger, generator, fixed_noise, global_step):
+def report_images(logger, generator, fixed_noise, global_step, title="generated_images"):
     generator.eval()
     with torch.no_grad():
         generated_images = generator.model(fixed_noise).cpu()
@@ -27,7 +27,7 @@ def report_images(logger, generator, fixed_noise, global_step):
     for image_idx, image in enumerate(generated_images):
         image = image.add(1).div(2).clamp(0, 1)
         logger.report_image(
-            title="generated_images",
+            title=title,
             series=f"sample_{image_idx}",
             iteration=global_step,
             image=to_pil_image(image),
